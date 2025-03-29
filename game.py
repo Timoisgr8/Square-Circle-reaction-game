@@ -65,7 +65,7 @@ def show_statistics():
             total_score = sum(score for score, _ in results)
             total_reaction_time = sum(
                 reaction_time for _, reaction_time in results)
-            
+
             accuracy = (total_score / (len(results) * 20)) * 100
             avg_reaction_time = total_reaction_time / \
                 len(results) if results else 0
@@ -154,12 +154,19 @@ def countdown():
 
 def play_round(controls):
     shape_type = random.choice(["circle", "square"])
-    color = random.choice([RED, GREEN, BLUE])
-    size = random.randint(30, 100)
-    x, y = random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50)
-    
+
+    # Define two fixed positions for the shape
+    position_1 = (WIDTH // 3, HEIGHT // 3)  # Example position 1 (top left)
+    # Example position 2 (top right)
+    position_2 = (2 * WIDTH // 3, HEIGHT // 3)
+
+    # Randomly choose one of the two fixed positions
+    x, y = random.choice([position_1, position_2])
+
     key_pressed = False
     correct = False
+    size = 100  # Fixed size
+    color = BLUE  # Fixed color (choose your color)
 
     screen.fill(WHITE)
     if shape_type == "circle":
@@ -167,7 +174,6 @@ def play_round(controls):
     else:
         pygame.draw.rect(screen, color, (x, y, size, size))
     pygame.display.flip()
-
 
     start_ticks = pygame.time.get_ticks()
     response_time = None
@@ -184,7 +190,7 @@ def play_round(controls):
                 if (shape_type == "circle" and event.key == controls["circle"]) or \
                    (shape_type == "square" and event.key == controls["square"]):
                     stats["reaction_times"].append(
-                        response_time / 1000.0 * 1000)
+                        response_time / 1000.0 * 1000)  # Store in ms
                     correct = True
                     flash_border(GREEN)
                 else:
@@ -192,12 +198,12 @@ def play_round(controls):
                     flash_border(RED)
 
         elapsed_time = pygame.time.get_ticks() - start_ticks
-        if elapsed_time >= 500:
+        if elapsed_time >= 500:  # Ensure at least 500 ms round window
             if not key_pressed:
                 flash_border(RED)
             break
 
-    return correct 
+    return correct
 
 
 def flash_border(color):
